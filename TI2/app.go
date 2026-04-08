@@ -39,7 +39,6 @@ func print_biniry(data []byte) string {
 
 	var result strings.Builder
 	if len(data) > 20 {
-		// Первые 10 байт
 		for i := 0; i < 10; i++ {
 			fmt.Fprintf(&result, "%08b", data[i])
 			if i < 9 {
@@ -47,7 +46,6 @@ func print_biniry(data []byte) string {
 			}
 		}
 		result.WriteString(" ........... ")
-		// Последние 10 байт
 		for i := len(data) - 10; i < len(data); i++ {
 			fmt.Fprintf(&result, "%08b", data[i])
 			if i < len(data)-1 {
@@ -55,7 +53,6 @@ func print_biniry(data []byte) string {
 			}
 		}
 	} else {
-		// Все байты
 		for i, b := range data {
 			fmt.Fprintf(&result, "%08b", b)
 			if i < len(data)-1 {
@@ -76,7 +73,6 @@ func lfsr_generate_key(key string, length int) []byte {
 		countBits   int
 	)
 
-	// Генерируем ключ
 	for i := 0; i < length; {
 		outBit := (register >> 26) & 1
 		currentByte = (currentByte << 1) | byte(outBit)
@@ -93,7 +89,6 @@ func lfsr_generate_key(key string, length int) []byte {
 		register = ((register << 1) & 0x07FFFFFF) | uint32(newBit)
 	}
 
-	// Добавляем последний байт, если он неполный
 	if countBits > 0 {
 		currentByte <<= 8 - countBits
 		extendedRegister = append(extendedRegister, currentByte)
@@ -144,10 +139,9 @@ func (a *App) EncryptFile(bits string, fileData []int, filename string) (map[str
 		return nil, fmt.Errorf("ошибка сохранения файла: %v", err)
 	}
 
-	// Возвращаем: оригинал (отформатированный), ключ (СЫРЫЕ БАЙТЫ), результат (отформатированный)
 	response := map[string]interface{}{
 		"original":  print_biniry(data),
-		"key":       print_biniry(key_arr), // Сырые байты ключа для форматирования в JS
+		"key":       print_biniry(key_arr), 
 		"encrypted": print_biniry(result),
 		"saved_as":  filepath.Base(outputFilename),
 	}
